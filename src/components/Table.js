@@ -1,11 +1,12 @@
-import { useTable, useFilters } from 'react-table'
+import { useTable, useFilters, useSortBy } from 'react-table'
+import { FaArrowUp, FaArrowDown } from 'react-icons/fa'
 import './Table.scss'
 
 const ColumnFilter = ({ column }) => {
   const {
     filterValue,
     preFilteredRows,
-    setFilter
+    setFilter,
   } = column
 
   return (
@@ -17,6 +18,23 @@ const ColumnFilter = ({ column }) => {
    )
 }
 
+const Sort = ({ column, onSortHandler }) => {
+  const { 
+    isSorted,
+    isSortedDesc,
+  } = column
+
+  return (
+    <div onClick={onSortHandler}>
+      {
+        isSorted ? (
+          isSortedDesc ? <FaArrowDown /> : <FaArrowUp />
+        ) : ''
+      }
+    </div>
+  )
+}
+
 const Table = ({ columns, data }) => {
   const instance = useTable({
       columns,
@@ -26,6 +44,7 @@ const Table = ({ columns, data }) => {
       }
     },
     useFilters,
+    useSortBy,
   )
 
   const {
@@ -38,14 +57,14 @@ const Table = ({ columns, data }) => {
 
   return (
     <div>
-      {console.log('aaa', instance)}
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map(headerGroup => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map(column => (
-                <th {...column.getHeaderProps()}>
+                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                   {column.render('Header')}
+                  <Sort column={column} onSortHandler={() => console.log('api call sort')} />
                   <div>
                     {column.canFilter && column.render('Filter')}
                   </div>
